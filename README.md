@@ -1,84 +1,69 @@
-# Azure Arc Deployment for Intune-Managed Windows Devices
+# Handy PowerShell Scripts
 
-This repository contains PowerShell scripts for onboarding Windows devices to Azure Arc through Microsoft Intune.
+A collection of useful PowerShell scripts for Windows device management, Azure, and Intune administration.
 
 ## Scripts
 
-### Deploy-AzureArcAgent.ps1
+### Autopilot-enroll.ps1
+Enrolls Windows devices in Autopilot and imports them to Intune:
+- Uses modern OAuth authentication with 2FA support
+- Automatically extracts device hardware hash
+- Supports both interactive and headless authentication
 
-The main script that handles:
-- Downloading the Azure Arc agent
-- Installing the agent
-- Registering the device with Azure Arc
-- Error handling and logging
+### Deploy-AzureArcAgent.ps1
+Onboards Windows devices to Azure Arc:
+- Downloads and installs the Azure Arc agent
+- Registers devices with Azure Arc
+- Provides comprehensive error handling and logging
 
 ### Prepare-IntuneArcPackage.ps1
+Creates an Intune Win32 app package for Azure Arc deployment:
+- Generates supporting detection and installation scripts
+- Packages files into .intunewin format
+- Provides deployment instructions
 
-Helper script to prepare an Intune Win32 app package, which:
-- Creates necessary supporting scripts (detection, installation, uninstallation)
-- Downloads the required Microsoft Win32 Content Prep Tool
-- Packages everything into an .intunewin file for Intune deployment
-- Generates deployment instructions
+### 90dayauditandsigninlogretention.ps1
+Configures Azure AD sign-in and audit log retention:
+- Sets retention period to 90 days
+- Automates Azure AD log management
+- Ensures security and compliance requirements
+
+### Compliance-EDR-Intune-Enabled
+Checks and enforces EDR (Endpoint Detection and Response) settings:
+- Verifies EDR configurations on Intune-managed devices
+- Reports compliance status
+- Includes configuration rules in JSON format
 
 ## Requirements
 
-- Windows 10 version 1809 or later / Windows Server 2019 or later
+- Windows 10/11 or Windows Server 2019/2022
 - PowerShell 5.1 or later
-- Internet connectivity for downloading the Azure Arc agent and registration
-- Proper Azure permissions
+- Internet connectivity
+- Appropriate Azure/Microsoft 365 permissions
 
-## Getting Started
+## Usage
 
-1. Clone or download this repository
-2. Run the preparation script: `.\Prepare-IntuneArcPackage.ps1`
-3. This will create an IntunePackage directory with all necessary files
-4. Follow the instructions in the generated Deployment-Instructions.txt file
-
-## Deployment Process
-
-Once the package is created, you'll deploy it through Intune as a Win32
-application. The deployment involves:
-
-1. Uploading the .intunewin package to Intune
-2. Configuring the application properties, including:
-   - Installation and uninstallation commands
-   - Detection method using the included detection script
-   - Requirements and dependencies
-3. Assigning the application to your device groups
-
-## Configuration Options
-
-The main deployment script (`Deploy-AzureArcAgent.ps1`) accepts several parameters:
-
-- **SubscriptionId**: Azure subscription to register the machine in
-- **ResourceGroup**: Resource group for the Arc-enabled machine
-- **Location**: Azure region for the Arc resource
-- **TenantId**: Azure AD tenant ID
-- **Tags**: Optional tags to assign to the Arc-enabled machine
-
-These parameters can be customized in the `Install-AzureArcAgent.ps1` wrapper script.
+Most scripts include detailed help information accessible via:
+```powershell
+Get-Help .\ScriptName.ps1 -Full
+```
 
 ## Authentication
 
-By default, the script uses device code authentication, which requires user intervention
-to complete the registration process. For fully automated deployments, you can modify
-the script to use a service principal by changing the authentication method in the
-Connect-AzureArc function.
+Scripts use modern authentication methods:
+- OAuth-based interactive browser authentication
+- Support for Multi-Factor Authentication (MFA/2FA)
+- Device code flow for headless scenarios
 
-## Troubleshooting
+## Logging
 
-Logs are stored in the following locations:
-- Main logs: `%ProgramData%\AzureArcOnboarding\ArcOnboarding.log`
-- Installation logs: `%ProgramData%\AzureArcOnboarding\ArcAgentInstall.log`
-- Uninstallation logs: `%ProgramData%\AzureArcOnboarding\ArcAgentUninstall.log`
-
-Common issues:
-- Network connectivity problems
-- Insufficient permissions
-- Device already registered with Azure Arc
+Scripts include logging capabilities for troubleshooting:
+- Detailed progress information
+- Error handling with meaningful messages
+- Troubleshooting guidance for common issues
 
 ## Additional Resources
 
-- [Azure Arc documentation](https://docs.microsoft.com/en-us/azure/azure-arc/)
-- [Intune Win32 app management](https://docs.microsoft.com/en-us/mem/intune/apps/apps-win32-app-management)
-- [Microsoft Win32 Content Prep Tool](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool)
+- [Azure Arc documentation](https://docs.microsoft.com/azure/azure-arc/)
+- [Windows Autopilot documentation](https://docs.microsoft.com/autopilot/)
+- [Intune documentation](https://docs.microsoft.com/mem/intune/)
